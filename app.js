@@ -1,16 +1,16 @@
 const ee = new EventEmitter()
 const frontDeskBells = new Audio('front-desk-bells.mp3')
 
-const Pomodoro = Vue.component('Pomodoro', {
+const Timer = Vue.component('Timer', {
   template: `
-  <div>
-    <h1>Pomodoro</h1>
-    <h2>{{pomodoros}} Pomodoros</h2>
-    <h2>{{stateStr}}</h2>
-    <h2>{{time}}</h2>
-    <button v-if="running" @click="stop">Stop</button>
-    <button v-else @click="start">Start</button>
-    <button @click="reset">Reset</button>
+  <div class="centered">
+      <h1>Timer</h1>
+      <h4>{{pomodoros}} Pomodoros</h4>
+      <h4>{{stateStr}}</h4>
+      <h1 class="timer">{{time}}</h1>
+      <button v-if="running" @click="stop" class="button-primary wide-button">Stop</button>
+      <button v-else @click="start" class="button-primary wide-button">Start</button>
+      <button @click="reset" class="button-primary wide-button">Reset</button>
   </div>`,
   data: function() {
     return {
@@ -116,20 +116,20 @@ const Pomodoro = Vue.component('Pomodoro', {
 
 const Tasks = Vue.component('Tasks', {
   template: `
-  <div>
+  <div class="centered">
     <h1>Tasks</h1>
     <div>{{progress}}%</div>
-    Name <input type="text" v-model="addName"/>
-    Points <input type="number" value="1" v-model.number="addPoints" min="1" oninput="validity.valid||(value=1)"/>
-    <button @click="addTask(addName, addPoints)">Add</button>
     <draggable v-model="tasks">
       <div v-for="(task, index) in tasks">
         <input type="checkbox" v-model="task.completed"/>
-        <input type="number" v-model.number="task.points" min="1" oninput="console.log(event)||(value=1)"/>
+        <input type="number" v-model.number="task.points" min="1" oninput="validity.valid||(value=1)"/>
         <input type="text" v-model="task.name"/>
-        <button @click="deleteTask(index)">Delete</button>
+        <button @click="deleteTask(index)" class="button-primary tight-button">Remove</button>
       </div>
     </draggable>
+    Points <input type="number" value="1" v-model.number="addPoints" min="1" oninput="validity.valid||(value=1)"/>
+    Name <input type="text" v-model="addName"/>
+    <button @click="addTask(addName, addPoints)" class="button-primary tight-button">Add</button>
   </div>`,
   data: function() {
     return {
@@ -191,18 +191,18 @@ const Tasks = Vue.component('Tasks', {
 
 const Settings = Vue.component('Settings', {
   template: `
-  <div>
+  <div class="centered">
     <h1>Settings</h1>
     <div>
-      Pomodoro Minutes
+      <label>Pomodoro Minutes</label>
       <input type="number" v-model.number="pomodoroMinutes" min="1" oninput="validity.valid||(value=1)"/>
     </div>
     <div>
-      Short Break Minutes
+      <label>Short Break Minutes</label>
       <input type="number" v-model.number="shortBreakMinutes" min="1" oninput="validity.valid||(value=1)"/>
     </div>
     <div>
-      Long Break Minutes
+      <label>Long Break Minutes</label>
       <input type="number" v-model.number="longBreakMinutes" min="1" oninput="validity.valid||(value=1)"/>
     </div>
   </div>`,
@@ -228,19 +228,25 @@ const Settings = Vue.component('Settings', {
 
 const About = Vue.component('About', {
   template: `
-  <div>
+  <div class="centered">
     <h1>About</h1>
+    <h4>Overview</h4>
     <p>This is a productivity web app which hosts a pomodoro timer, a tasks page with a progress bar, and a settings page.</p>
+    <h4>Pomodoro Technique</h4>
     <p>The Pomodoro Technique is a time management method developed by Francesco Cirillo in the late 1980s. The technique uses a timer to break down work into intervals, traditionally 25 minutes in length, separated by short breaks. These intervals are named pomodoros, the plural in English of the Italian word pomodoro (tomato), after the tomato-shaped kitchen timer that Cirillo used as a university student.</p>
-    <p>The pomodoro timer allows you to start, stop, and reset. Whenever the timer hits 0, it rings and moves onto its next phase automatically. After every pomodoro there is either a short break or, if you hit your fourth consecutive pomodoro, a long break.</p>
-    <p>The tasks page allows you to create tasks with specified points. A point is merely a unit of measure that allows you to estimate the relative effort of a task to other tasks on your list. As you mark tasks as completed, the progress bar will show your estimated completion for the session.</p>
+    <h4>Timer</h4>
+    <p>The timer adheres to the Pomdoro Technique. Whenever the timer hits 0 seconds, it plays a sound notification and moves onto its next phase automatically. The phases are as follows - after every pomodoro there is either a short break or, if you hit your fourth consecutive pomodoro, a long break. After every break, there is a pomodoro. You may start, stop, and reset the timer.</p>
+    <h4>Tasks</h4>
+    <p>The tasks page allows you to create tasks with specified points. A point is a discretionary unit of measure that allows you to estimate the effort of a task relative to other tasks on your list. With this information you may mark tasks as completed and the progress bar will gauge your estimated completion for the session.</p>
+    <h4>Settings</h4>
     <p>The settings page allows you to customize the minutes of a pomodoro, short break, or long break.</p>
-    <p>Note that currently there is no way to save a session. If you refresh the web application, your saved tasks and settings will be lost.</p>
+    <h4>Session</h4>
+    <p>Unfortunately, the web app does not support persistent storage. If you refresh the web application, your saved tasks and settings will be lost.</p>
   </div>`
 })
 
 const routes = [
-  { path: '/', component: Pomodoro },
+  { path: '/', component: Timer },
   { path: '/tasks', component: Tasks },
   { path: '/settings', component: Settings },
   { path: '/about', component: About }

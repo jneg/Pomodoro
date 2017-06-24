@@ -1,18 +1,24 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <link rel="stylesheet" href="">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/skeleton/2.0.4/skeleton.min.css">
+    <link rel="stylesheet" href="negahban-skeleton.css">
+    <link href="https://fonts.googleapis.com/css?family=Raleway:100,200,300,400,600" rel="stylesheet">
     <title>Pomodoro App</title>
   </head>
   <body>
     <div id="app">
-      <router-link to="/">Pomodoro</router-link>
-      <router-link to="/tasks">Tasks</router-link>
-      <router-link to="/settings">Settings</router-link>
-      <router-link to="/about">About</router-link>
-      <keep-alive>
-        <router-view></router-view>
-      </keep-alive>
+      <div class="container">
+        <nav class="navbar">
+          <router-link to="/" class="nav-link">Timer</router-link>
+          <router-link to="/tasks" class="nav-link">Tasks</router-link>
+          <router-link to="/settings" class="nav-link">Settings</router-link>
+          <router-link to="/about" class="nav-link">About</router-link>
+        </nav>
+        <keep-alive>
+          <router-view></router-view>
+        </keep-alive>
+      </div>
     </div>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.3.4/vue.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/vue-router/2.6.0/vue-router.min.js"></script>

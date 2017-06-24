@@ -5,6 +5,10 @@ app.get('/', function (req, res) {
   res.sendFile(__dirname + '/index.html')
 })
 
+app.get('/negahban-skeleton.css', function (req, res) {
+  res.sendFile(__dirname + '/negahban-skeleton.css')
+})
+
 app.get('/app.js', function(req, res) {
   res.sendFile(__dirname + '/app.js')
 })
