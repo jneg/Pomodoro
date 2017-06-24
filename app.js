@@ -1,10 +1,9 @@
-var ee = new EventEmitter()
+const ee = new EventEmitter()
 
-Vue.component('Pomodoro', {
+const Pomodoro = Vue.component('Pomodoro', {
   template: `
   <div>
     <h1>Pomodoro</h1>
-    {{pomodoroMinutes}}
     <h2>{{pomodoros}} Pomodoros</h2>
     <h2>{{stateStr}}</h2>
     <h2>{{time}}</h2>
@@ -111,21 +110,20 @@ Vue.component('Pomodoro', {
       this.longBreakMinutes = m
     }.bind(this))
   }
-});
+})
 
-Vue.component('Tasks', {
+const Tasks = Vue.component('Tasks', {
   template: `
   <div>
     <h1>Tasks</h1>
     <div>{{progress}}%</div>
-    <div>{{tasks}}</div>
     Name <input type="text" v-model="addName"/>
-    Points <input type="number" value="1" v-model.number="addPoints" min=1 oninput="validity.valid||(value=1)"/>
+    Points <input type="number" value="1" v-model.number="addPoints" min="1" oninput="validity.valid||(value=1)"/>
     <button @click="addTask(addName, addPoints)">Add</button>
     <draggable v-model="tasks">
       <div v-for="(task, index) in tasks">
         <input type="checkbox" v-model="task.completed"/>
-        <input type="number" v-model.number="task.points" min=1 oninput="validity.valid||(value=1)"/>
+        <input type="number" v-model.number="task.points" min="1" oninput="console.log(event)||(value=1)"/>
         <input type="text" v-model="task.name"/>
         <button @click="deleteTask(index)">Delete</button>
       </div>
@@ -170,6 +168,10 @@ Vue.component('Tasks', {
     }
   },
   methods: {
+    validatePoints: function(e) {
+      console.log(e)
+      return false
+    },
     addTask: function(name, points) {
       this.tasks.push({
         name: name,
@@ -185,21 +187,21 @@ Vue.component('Tasks', {
   }
 })
 
-Vue.component('Settings', {
+const Settings = Vue.component('Settings', {
   template: `
   <div>
     <h1>Settings</h1>
     <div>
       Pomodoro Minutes
-      <input type="number" v-model.number="pomodoroMinutes" min=1 oninput="validity.valid||(value=1)"/>
+      <input type="number" v-model.number="pomodoroMinutes" min="1" oninput="validity.valid||(value=1)"/>
     </div>
     <div>
       Short Break Minutes
-      <input type="number" v-model.number="shortBreakMinutes" min=1 oninput="validity.valid||(value=1)"/>
+      <input type="number" v-model.number="shortBreakMinutes" min="1" oninput="validity.valid||(value=1)"/>
     </div>
     <div>
       Long Break Minutes
-      <input type="number" v-model.number="longBreakMinutes" min=1 oninput="validity.valid||(value=1)"/>
+      <input type="number" v-model.number="longBreakMinutes" min="1" oninput="validity.valid||(value=1)"/>
     </div>
   </div>`,
   data: function() {
@@ -222,7 +224,7 @@ Vue.component('Settings', {
   }
 })
 
-Vue.component('About', {
+const About = Vue.component('About', {
   template: `
   <div>
     <h1>About</h1>
@@ -235,12 +237,17 @@ Vue.component('About', {
   </div>`
 })
 
-new Vue({
-  el: '#Mount',
-  template: `<div>
-    <Pomodoro/>
-    <Tasks/>
-    <Settings/>
-    <About/>
-  </div>`
-});
+const routes = [
+  { path: '/', component: Pomodoro },
+  { path: '/tasks', component: Tasks },
+  { path: '/settings', component: Settings },
+  { path: '/about', component: About }
+]
+
+const router = new VueRouter({
+  routes: routes
+})
+
+const app = new Vue({
+  router: router
+}).$mount('#app')

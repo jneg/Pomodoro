@@ -5,8 +5,17 @@
     <title>Pomodoro App</title>
   </head>
   <body>
-    <div id="Mount"></div>
+    <div id="app">
+      <router-link to="/">Pomodoro</router-link>
+      <router-link to="/tasks">Tasks</router-link>
+      <router-link to="/settings">Settings</router-link>
+      <router-link to="/about">About</router-link>
+      <keep-alive>
+        <router-view></router-view>
+      </keep-alive>
+    </div>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.3.4/vue.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/vue-router/2.6.0/vue-router.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/EventEmitter/5.1.0/EventEmitter.min.js"></script>
     <script src="http://cdnjs.cloudflare.com/ajax/libs/Sortable/1.6.0/Sortable.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Vue.Draggable/2.13.1/vuedraggable.min.js"></script>
