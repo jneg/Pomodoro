@@ -1,7 +1,10 @@
+var ee = new EventEmitter()
+
 Vue.component('Pomodoro', {
   template: `
   <div>
     <h1>Pomodoro</h1>
+    {{pomodoroMinutes}}
     <h2>{{pomodoros}} Pomodoros</h2>
     <h2>{{stateStr}}</h2>
     <h2>{{time}}</h2>
@@ -98,6 +101,15 @@ Vue.component('Pomodoro', {
   created: function() {
     this.state = this.states.pomodoro
     this.seconds = this.pomodoroSeconds
+    ee.on('modifyPomodoroMinutes', function(m) {
+      this.pomodoroMinutes = m
+    }.bind(this))
+    ee.on('modifyShortBreakMinutes', function(m) {
+      this.shortBreakMinutes = m
+    }.bind(this))
+    ee.on('modifyLongBreakMinutes', function(m) {
+      this.longBreakMinutes = m
+    }.bind(this))
   }
 });
 
@@ -106,15 +118,18 @@ Vue.component('Tasks', {
   <div>
     <h1>Tasks</h1>
     <div>{{progress}}%</div>
+    <div>{{tasks}}</div>
     Name <input type="text" v-model="addName"/>
     Points <input type="number" value="1" v-model.number="addPoints" min=1 oninput="validity.valid||(value=1)"/>
     <button @click="addTask(addName, addPoints)">Add</button>
-    <div v-for="(task, index) in tasks">
-      <input type="checkbox" v-model="task.completed"/>
-      <input type="number" v-model.number="task.points" min=1 oninput="validity.valid||(value=1)"/>
-      <input type="text" v-model="task.name"/>
-      <button @click="deleteTask(index)">Delete</button>
-    </div>
+    <draggable v-model="tasks">
+      <div v-for="(task, index) in tasks">
+        <input type="checkbox" v-model="task.completed"/>
+        <input type="number" v-model.number="task.points" min=1 oninput="validity.valid||(value=1)"/>
+        <input type="text" v-model="task.name"/>
+        <button @click="deleteTask(index)">Delete</button>
+      </div>
+    </draggable>
   </div>`,
   data: function() {
     return {
@@ -176,17 +191,35 @@ Vue.component('Settings', {
     <h1>Settings</h1>
     <div>
       Pomodoro Minutes
-      <input type="text"/>
+      <input type="number" v-model.number="pomodoroMinutes" min=1 oninput="validity.valid||(value=1)"/>
     </div>
     <div>
       Short Break Minutes
-      <input type="text"/>
+      <input type="number" v-model.number="shortBreakMinutes" min=1 oninput="validity.valid||(value=1)"/>
     </div>
     <div>
       Long Break Minutes
-      <input type="text"/>
+      <input type="number" v-model.number="longBreakMinutes" min=1 oninput="validity.valid||(value=1)"/>
     </div>
-  </div>`
+  </div>`,
+  data: function() {
+    return {
+      pomodoroMinutes: 25,
+      shortBreakMinutes: 5,
+      longBreakMinutes: 15
+    }
+  },
+  watch: {
+    pomodoroMinutes: function(m) {
+      ee.emit('modifyPomodoroMinutes', m)
+    },
+    shortBreakMinutes: function(m) {
+      ee.emit('modifyShortBreakMinutes', m)
+    },
+    longBreakMinutes: function(m) {
+      ee.emit('modifyLongBreakMinutes', m)
+    }
+  }
 })
 
 Vue.component('About', {
