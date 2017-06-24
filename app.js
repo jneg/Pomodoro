@@ -1,4 +1,5 @@
 const ee = new EventEmitter()
+const frontDeskBells = new Audio('front-desk-bells.mp3')
 
 const Pomodoro = Vue.component('Pomodoro', {
   template: `
@@ -59,6 +60,7 @@ const Pomodoro = Vue.component('Pomodoro', {
   watch: {
     seconds: function(s) {
       if (s === 0) {
+        frontDeskBells.play();
         if (this.state === this.states.pomodoro) {
           this.pomodoros += 1
           if (this.pomodoros % 4 === 0) {
