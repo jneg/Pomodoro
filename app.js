@@ -168,7 +168,6 @@ const Tasks = Vue.component('Tasks', {
     <div class="progress-bar">
       <div :style="{width:progress + '%'}"></div>
     </div>
-    {{tasks}}
     <draggable v-model="tasks">
       <div v-for="(task, index) in tasks">
         <button @click="deleteTask(index)" class="remove-button"></button>
@@ -192,13 +191,22 @@ const Tasks = Vue.component('Tasks', {
     }
   },
   computed: {
+    revampedTasks: function() {
+      return this.tasks.map(function(v) {
+        return {
+          name: v.name,
+          points: v.points === "" ? 0 : v.points,
+          completed: v.completed
+        }
+      })
+    },
     completedTasks: function() {
-      return this.tasks.filter(function(v) {
+      return this.revampedTasks.filter(function(v) {
         return v.completed === true
       })
     },
     totalPointsArray: function() {
-      return this.tasks.map(function(v) {
+      return this.revampedTasks.map(function(v) {
         return v.points
       })
     },
