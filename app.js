@@ -1,162 +1,153 @@
-const ee = new EventEmitter()
-const bells = new Audio('front-desk-bells.mp3')
-const slowTicking = new Audio('slow-ticking.mp3')
-const fastTicking = new Audio('fast-ticking.mp3')
-const heartbeat = new Audio('heartbeat.mp3')
-const rainforest = new Audio('rainforest.mp3')
+const immutable = {
+  secondsInMinute: 60,
+  phases: {
+    pomodoro: 'Pomodoro',
+    shortBreak: 'Short Break',
+    longBreak: 'Long Break'
+  },
+  ticking: {
+    noTicking: null,
+    slowTicking: new Audio('slow-ticking.mp3'),
+    fastTicking: new Audio('fast-ticking.mp3'),
+    heartbeat: new Audio('heartbeat.mp3'),
+    rainforest: new Audio('rainforest.mp3')
+  },
+  alarm: {
+    noAlarm: null,
+    bells: new Audio('front-desk-bells.mp3')
+  }
+}
+
+const store = {
+  mutable: {
+    pomodoroSeconds: 25 * 60,
+    shortBreakSeconds: 5 * 60,
+    longBreakSeconds: 15 * 60,
+    ticking: immutable.ticking.slowTicking,
+    alarm: immutable.alarm.bells,
+    pomodoros: 0,
+    phase: immutable.phases.pomodoro,
+    timerSeconds: 25 * 60,
+    decrementer: null
+  },
+  mutatePomodoroMinutes: function(m) {
+    this.mutable.pomodoroSeconds = m * immutable.secondsInMinute
+  },
+  mutateShortBreakMinutes: function(m) {
+    this.mutable.shortBreakSeconds = m * immutable.secondsInMinute
+  },
+  mutateLongBreakMinutes: function(m) {
+    this.mutable.longBreakSeconds = m * immutable.secondsInMinute
+  },
+  mutateTicking: function(s) {
+    if (this.mutable.decrementer !== null) {
+      this.stopTicking()
+      this.mutable.ticking = immutable.ticking[s]
+      this.startTicking()
+    } else {
+      this.mutable.ticking = immutable.ticking[s]
+    }
+  },
+  mutateAlarm: function(s) {
+    this.mutable.alarm = immutable.alarm[s]
+  },
+  startTicking: function() {
+    if (this.mutable.ticking !== null) {
+      this.mutable.ticking.addEventListener('ended', function() {
+        this.currentTime = 0
+        this.play()
+      }, false);
+      this.mutable.ticking.play()
+    }
+  },
+  stopTicking: function() {
+    if (this.mutable.ticking !== null) {
+      this.mutable.ticking.removeEventListener('ended', function() {
+        this.currentTime = 0
+        this.play()
+      }, false);
+      this.mutable.ticking.pause()
+    }
+  },
+  startDecrementer: function() {
+    clearInterval(this.mutable.decrementer)
+    this.mutable.decrementer = setInterval(function() {
+      this.mutable.timerSeconds -= 1
+    }.bind(this), 1000)
+    this.startTicking()
+  },
+  stopDecrementer: function() {
+    clearInterval(this.mutable.decrementer)
+    this.mutable.decrementer = null
+    this.stopTicking()
+  },
+  resetDecrementer: function() {
+    this.stopDecrementer()
+    this.resetSeconds()
+  },
+  resetSeconds: function() {
+    if (this.mutable.phase === immutable.phases.pomodoro) this.mutable.timerSeconds = this.mutable.pomodoroSeconds
+    else if (this.mutable.phase === immutable.phases.shortBreak) this.mutable.timerSeconds = this.mutable.shortBreakSeconds
+    else if (this.mutable.phase === immutable.phases.longBreak) this.mutable.timerSeconds = this.mutable.longBreakSeconds
+  },
+  nextPhase: function() {
+    if (this.mutable.alarm !== null) this.mutable.alarm.play()
+    if (this.mutable.phase === immutable.phases.pomodoro) {
+      this.mutable.pomodoros += 1
+      if (this.mutable.pomodoros % 4 !== 0) {
+        this.mutable.phase = immutable.phases.shortBreak
+        this.mutable.seconds = this.mutable.shortBreakSeconds
+      } else {
+        this.mutable.phase = immutable.phases.longBreak
+        this.mutable.seconds = this.mutable.longBreakSeconds
+      }
+    } else if (this.mutable.phase === immutable.phases.shortBreak || this.mutable.phase === immutable.phases.longBreak) {
+      this.mutable.phase = immutable.phases.pomodoro
+      this.mutable.seconds = this.mutable.pomodoroSeconds
+    }
+  }
+}
 
 const Timer = Vue.component('Timer', {
   template: `
   <div class="centered">
     <div class="header">Timer</div>
-    <div class="subheader">{{pomodoros}} Pomodoros</div>
-    <div class="subheader">{{stateStr}}</div>
+    <div class="subheader">{{shared.pomodoros}} Pomodoros</div>
+    <div class="subheader">{{shared.phase}}</div>
     <div class="mammoth">{{time}}</div>
-    <button v-if="running" @click="stop" class="button-primary wide-button">Stop</button>
+    <button v-if="shared.decrementer" @click="stop" class="button-primary wide-button">Stop</button>
     <button v-else @click="start" class="button-primary wide-button">Start</button>
     <button @click="reset" class="button-primary wide-button">Reset</button>
   </div>`,
   data: function() {
     return {
-      pomodoroMinutes: 25,
-      shortBreakMinutes: 5,
-      longBreakMinutes: 15,
-      ticking: null,
-      alarm: null,
-      interval: null,
-      running: false,
-      pomodoros: 0,
-      state: 0,
-      seconds: 0
+      shared: store.mutable
     }
   },
   computed: {
-    states: function() {
-      return {
-        pomodoro: 0,
-        shortBreak: 1,
-        longBreak: 2
-      }
-    },
-    secondsInMinute: function() {
-      return 60
-    },
-    pomodoroSeconds: function() {
-      return this.pomodoroMinutes * this.secondsInMinute
-    },
-    shortBreakSeconds: function() {
-      return this.shortBreakMinutes * this.secondsInMinute
-    },
-    longBreakSeconds: function() {
-      return this.longBreakMinutes * this.secondsInMinute
-    },
-    stateStr: function() {
-      if (this.state === this.states.pomodoro) return 'Pomodoro'
-      if (this.state === this.states.shortBreak) return 'Short Break'
-      if (this.state === this.states.longBreak) return 'Long Break'
-    },
     time: function() {
-      let minute = Math.floor(this.seconds / 60)
-      let second = this.seconds % 60
+      let minute = Math.floor(this.shared.timerSeconds / 60)
+      let second = this.shared.timerSeconds % 60
       let m = minute > 9 ? minute : '0' + minute
       let s = second > 9 ? second : '0' + second
       return m + ':' + s
     }
   },
   watch: {
-    seconds: function(s) {
-      if (s === 0) {
-        this.ringAlarm()
-        if (this.state === this.states.pomodoro) {
-          this.pomodoros += 1
-          if (this.pomodoros % 4 === 0) {
-            this.state = this.states.longBreak
-            this.seconds = this.longBreakSeconds
-          } else {
-            this.state = this.states.shortBreak
-            this.seconds = this.shortBreakSeconds
-          }
-        } else if (this.state === this.states.shortBreak) {
-          this.state = this.states.pomodoro
-          this.seconds = this.pomodoroSeconds
-        } else if (this.state === this.states.longBreak) {
-          this.state = this.states.pomodoro
-          this.seconds = this.pomodoroSeconds
-        }
-      }
+    'shared.timerSeconds': function(s) {
+      if (s === 0) store.nextPhase()
     }
   },
   methods: {
     start: function() {
-      this.running = true
-      clearInterval(this.interval)
-      this.interval = setInterval(function() {
-        this.seconds -= 1
-      }.bind(this), 1000)
-      this.startTicking()
+      store.startDecrementer()
     },
     stop: function() {
-      this.running = false
-      clearInterval(this.interval)
-      this.stopTicking()
+      store.stopDecrementer()
     },
     reset: function() {
-      this.stop()
-      if (this.state === this.states.pomodoro) this.seconds = this.pomodoroSeconds
-      else if (this.state === this.states.shortBreak) this.seconds = this.shortBreakSeconds
-      else if (this.state === this.states.longBreak) this.seconds = this.longBreakSeconds
-    },
-    startTicking: function() {
-      if (this.ticking !== null) {
-        this.ticking.addEventListener('ended', function() {
-          this.currentTime = 0
-          this.play()
-        }, false);
-        this.ticking.play()
-      }
-    },
-    stopTicking: function() {
-      if (this.ticking !== null) {
-        this.ticking.removeEventListener('ended', function() {
-          this.currentTime = 0
-          this.play()
-        }, false);
-        this.ticking.pause()
-      }
-    },
-    ringAlarm: function() {
-      if (this.alarm !== null) this.alarm.play()
+      store.resetDecrementer()
     }
-  },
-  created: function() {
-    console.log('creating timer')
-    this.ticking = slowTicking
-    this.alarm = bells
-    this.state = this.states.pomodoro
-    this.seconds = this.pomodoroSeconds
-    ee.on('modifyPomodoroMinutes', function(m) {
-      console.log('timer: ' + m)
-      this.pomodoroMinutes = m
-    }.bind(this))
-    ee.on('modifyShortBreakMinutes', function(m) {
-      this.shortBreakMinutes = m
-    }.bind(this))
-    ee.on('modifyLongBreakMinutes', function(m) {
-      this.longBreakMinutes = m
-    }.bind(this))
-    ee.on('modifyTicking', function(v) {
-      this.stopTicking()
-      if (v === 'noTicking') this.ticking = null
-      if (v === 'slowTicking') this.ticking = slowTicking
-      if (v === 'fastTicking') this.ticking = fastTicking
-      if (v === 'heartbeat') this.ticking = heartbeat
-      if (v === 'rainforest') this.ticking = rainforest
-      if (this.running === true) this.startTicking()
-    }.bind(this))
-    ee.on('modifyAlarm', function(v) {
-      if (v === 'noAlarm') this.alarm = null
-      if (v === 'bells') this.alarm = bells
-    }.bind(this))
   }
 })
 
@@ -252,6 +243,12 @@ const Settings = Vue.component('Settings', {
     <div class="header">Settings</div>
     <div class="bottom-pad">
       <div class="subheader">Pomodoro Minutes</div>
+      <input type="radio" id="pomodoroMinutes5" name="pomodoroMinutes" value="5" v-model.number="pomodoroMinutes">
+      <label for="pomodoroMinutes5" class="radio"/>
+      <div class="radio-label">5</div>
+      <input type="radio" id="pomodoroMinutes10" name="pomodoroMinutes" value="10" v-model.number="pomodoroMinutes">
+      <label for="pomodoroMinutes10" class="radio"/>
+      <div class="radio-label">10</div>
       <input type="radio" id="pomodoroMinutes15" name="pomodoroMinutes" value="15" v-model.number="pomodoroMinutes">
       <label for="pomodoroMinutes15" class="radio"/>
       <div class="radio-label">15</div>
@@ -270,6 +267,9 @@ const Settings = Vue.component('Settings', {
       <input type="radio" id="pomodoroMinutes50" name="pomodoroMinutes" value="50" v-model.number="pomodoroMinutes">
       <label for="pomodoroMinutes50" class="radio"/>
       <div class="radio-label">50</div>
+      <input type="radio" id="pomodoroMinutes60" name="pomodoroMinutes" value="60" v-model.number="pomodoroMinutes">
+      <label for="pomodoroMinutes60" class="radio"/>
+      <div class="radio-label">60</div>
     </div>
     <div class="bottom-pad">
       <div class="subheader">Short Break Minutes</div>
@@ -282,6 +282,15 @@ const Settings = Vue.component('Settings', {
       <input type="radio" id="shortBreakMinutes15" name="shortBreakMinutes" value="15" v-model.number="shortBreakMinutes">
       <label for="shortBreakMinutes15" class="radio"/>
       <div class="radio-label">15</div>
+      <input type="radio" id="shortBreakMinutes20" name="shortBreakMinutes" value="20" v-model.number="shortBreakMinutes">
+      <label for="shortBreakMinutes20" class="radio"/>
+      <div class="radio-label">20</div>
+      <input type="radio" id="shortBreakMinutes25" name="shortBreakMinutes" value="25" v-model.number="shortBreakMinutes">
+      <label for="shortBreakMinutes25" class="radio"/>
+      <div class="radio-label">25</div>
+      <input type="radio" id="shortBreakMinutes30" name="shortBreakMinutes" value="30" v-model.number="shortBreakMinutes">
+      <label for="shortBreakMinutes30" class="radio"/>
+      <div class="radio-label">30</div>
     </div>
     <div class="bottom-pad">
       <div class="subheader">Long Break Minutes</div>
@@ -297,31 +306,37 @@ const Settings = Vue.component('Settings', {
       <input type="radio" id="longBreakMinutes60" name="longBreakMinutes" value="60" v-model.number="longBreakMinutes">
       <label for="longBreakMinutes60" class="radio"/>
       <div class="radio-label">60</div>
+      <input type="radio" id="longBreakMinutes90" name="longBreakMinutes" value="90" v-model.number="longBreakMinutes">
+      <label for="longBreakMinutes90" class="radio"/>
+      <div class="radio-label">90</div>
+      <input type="radio" id="longBreakMinutes120" name="longBreakMinutes" value="120" v-model.number="longBreakMinutes">
+      <label for="longBreakMinutes120" class="radio"/>
+      <div class="radio-label">120</div>
     </div>
     <div class="bottom-pad">
       <div class="subheader">Ticking</div>
-      <input type="radio" id="noTicking" name="ticking" value="noTicking" v-model="tickingRadio">
+      <input type="radio" id="noTicking" name="ticking" value="noTicking" v-model="ticking">
       <label for="noTicking" class="radio"/>
       <div class="radio-label">No Ticking</div>
-      <input type="radio" id="slowTicking" name="ticking" value="slowTicking" v-model="tickingRadio">
+      <input type="radio" id="slowTicking" name="ticking" value="slowTicking" v-model="ticking">
       <label for="slowTicking" class="radio"/>
       <div class="radio-label">Slow Ticking</div>
-      <input type="radio" id="fastTicking" name="ticking" value="fastTicking" v-model="tickingRadio">
+      <input type="radio" id="fastTicking" name="ticking" value="fastTicking" v-model="ticking">
       <label for="fastTicking" class="radio"/>
       <div class="radio-label">Fast Ticking</div>
-      <input type="radio" id="heartbeat" name="ticking" value="heartbeat" v-model="tickingRadio">
+      <input type="radio" id="heartbeat" name="ticking" value="heartbeat" v-model="ticking">
       <label for="heartbeat" class="radio"/>
       <div class="radio-label">Heartbeat</div>
-      <input type="radio" id="rainforest" name="ticking" value="rainforest" v-model="tickingRadio">
+      <input type="radio" id="rainforest" name="ticking" value="rainforest" v-model="ticking">
       <label for="rainforest" class="radio"/>
       <div class="radio-label">Rainforest</div>
     </div>
     <div class="bottom-pad">
       <div class="subheader">Alarm</div>
-      <input type="radio" id="noAlarm" name="alarm" value="noAlarm" v-model="alarmRadio">
+      <input type="radio" id="noAlarm" name="alarm" value="noAlarm" v-model="alarm">
       <label for="noAlarm" class="radio"/>
       <div class="radio-label">No Alarm</div>
-      <input type="radio" id="bells" name="alarm" value="bells" v-model="alarmRadio">
+      <input type="radio" id="bells" name="alarm" value="bells" v-model="alarm">
       <label for="bells" class="radio"/>
       <div class="radio-label">Bells</div>
     </div>
@@ -331,34 +346,33 @@ const Settings = Vue.component('Settings', {
       pomodoroMinutes: null,
       shortBreakMinutes: null,
       longBreakMinutes: null,
-      tickingRadio: null,
-      alarmRadio: null
+      ticking: null,
+      alarm: null
     }
   },
   watch: {
     pomodoroMinutes: function(m) {
-      console.log('watch: ' + m)
-      ee.emit('modifyPomodoroMinutes', m)
+      store.mutatePomodoroMinutes(m)
     },
     shortBreakMinutes: function(m) {
-      ee.emit('modifyShortBreakMinutes', m)
+      store.mutateLongBreakMinutes(m)
     },
     longBreakMinutes: function(m) {
-      ee.emit('modifyLongBreakMinutes', m)
+      store.mutateShortBreakMinutes(m)
     },
-    tickingRadio: function(v) {
-      ee.emit('modifyTicking', v)
+    ticking: function(s) {
+      store.mutateTicking(s)
     },
-    alarmRadio: function(v) {
-      ee.emit('modifyAlarm', v)
+    alarm: function(s) {
+      store.mutateAlarm(s)
     }
   },
   created: function() {
-    this.pomodoroMinutes = 25
-    this.shortBreakMinutes = 5
-    this.longBreakMinutes = 15
-    this.tickingRadio = 'slowTicking'
-    this.alarmRadio = 'bells'
+    this.pomodoroMinutes = store.mutable.pomodoroSeconds / immutable.secondsInMinute
+    this.shortBreakMinutes = store.mutable.shortBreakSeconds / immutable.secondsInMinute
+    this.longBreakMinutes = store.mutable.longBreakSeconds / immutable.secondsInMinute
+    this.ticking = 'slowTicking'
+    this.alarm = 'bells'
   }
 })
 
