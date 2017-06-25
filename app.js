@@ -1,5 +1,9 @@
 const ee = new EventEmitter()
-const frontDeskBells = new Audio('front-desk-bells.mp3')
+const bells = new Audio('front-desk-bells.mp3')
+const slowTicking = new Audio('slow-ticking.mp3')
+const fastTicking = new Audio('fast-ticking.mp3')
+const heartbeat = new Audio('heartbeat.mp3')
+const rainforest = new Audio('rainforest.mp3')
 
 const Timer = Vue.component('Timer', {
   template: `
@@ -17,6 +21,8 @@ const Timer = Vue.component('Timer', {
       pomodoroMinutes: 25,
       shortBreakMinutes: 5,
       longBreakMinutes: 15,
+      ticking: null,
+      alarm: null,
       interval: null,
       running: false,
       pomodoros: 0,
@@ -60,7 +66,7 @@ const Timer = Vue.component('Timer', {
   watch: {
     seconds: function(s) {
       if (s === 0) {
-        frontDeskBells.play();
+        this.ringAlarm()
         if (this.state === this.states.pomodoro) {
           this.pomodoros += 1
           if (this.pomodoros % 4 === 0) {
@@ -87,19 +93,44 @@ const Timer = Vue.component('Timer', {
       this.interval = setInterval(function() {
         this.seconds -= 1
       }.bind(this), 1000)
+      this.startTicking()
     },
     stop: function() {
       this.running = false
       clearInterval(this.interval)
+      this.stopTicking()
     },
     reset: function() {
       this.stop()
       if (this.state === this.states.pomodoro) this.seconds = this.pomodoroSeconds
       else if (this.state === this.states.shortBreak) this.seconds = this.shortBreakSeconds
       else if (this.state === this.states.longBreak) this.seconds = this.longBreakSeconds
+    },
+    startTicking: function() {
+      if (this.ticking !== null) {
+        this.ticking.addEventListener('ended', function() {
+          this.currentTime = 0
+          this.play()
+        }, false);
+        this.ticking.play()
+      }
+    },
+    stopTicking: function() {
+      if (this.ticking !== null) {
+        this.ticking.removeEventListener('ended', function() {
+          this.currentTime = 0
+          this.play()
+        }, false);
+        this.ticking.pause()
+      }
+    },
+    ringAlarm: function() {
+      if (this.alarm !== null) this.alarm.play()
     }
   },
   created: function() {
+    this.ticking = slowTicking
+    this.alarm = bells
     this.state = this.states.pomodoro
     this.seconds = this.pomodoroSeconds
     ee.on('modifyPomodoroMinutes', function(m) {
@@ -110,6 +141,19 @@ const Timer = Vue.component('Timer', {
     }.bind(this))
     ee.on('modifyLongBreakMinutes', function(m) {
       this.longBreakMinutes = m
+    }.bind(this))
+    ee.on('modifyTicking', function(v) {
+      this.stopTicking()
+      if (v === 'noTicking') this.ticking = null
+      if (v === 'slowTicking') this.ticking = slowTicking
+      if (v === 'fastTicking') this.ticking = fastTicking
+      if (v === 'heartbeat') this.ticking = heartbeat
+      if (v === 'rainforest') this.ticking = rainforest
+      if (this.running === true) this.startTicking()
+    }.bind(this))
+    ee.on('modifyAlarm', function(v) {
+      if (v === 'noAlarm') this.alarm = null
+      if (v === 'bells') this.alarm = bells
     }.bind(this))
   }
 })
@@ -211,12 +255,27 @@ const Settings = Vue.component('Settings', {
       <label>Long Break Minutes</label>
       <input type="number" v-model.number="longBreakMinutes" min="1" oninput="validity.valid||(value=1)"/>
     </div>
+    <div>
+      <label>Ticking</label>
+      <input type="radio" name="ticking" value="noTicking" v-model="tickingRadio">No Ticking
+      <input type="radio" name="ticking" value="slowTicking" v-model="tickingRadio">Slow Ticking
+      <input type="radio" name="ticking" value="fastTicking" v-model="tickingRadio">Fast Ticking
+      <input type="radio" name="ticking" value="heartbeat" v-model="tickingRadio">Heartbeat
+      <input type="radio" name="ticking" value="rainforest" v-model="tickingRadio">Rainforest
+    </div>
+    <div>
+      <label>Alarm</label>
+      <input type="radio" name="alarm" value="noAlarm" v-model="alarmRadio">No Alarm
+      <input type="radio" name="alarm" value="bells" v-model="alarmRadio">Bells
+    </div>
   </div>`,
   data: function() {
     return {
       pomodoroMinutes: 25,
       shortBreakMinutes: 5,
-      longBreakMinutes: 15
+      longBreakMinutes: 15,
+      tickingRadio: null,
+      alarmRadio: null
     }
   },
   watch: {
@@ -228,7 +287,17 @@ const Settings = Vue.component('Settings', {
     },
     longBreakMinutes: function(m) {
       ee.emit('modifyLongBreakMinutes', m)
+    },
+    tickingRadio: function(v) {
+      ee.emit('modifyTicking', v)
+    },
+    alarmRadio: function(v) {
+      ee.emit('modifyAlarm', v)
     }
+  },
+  created: function() {
+    this.tickingRadio = 'slowTicking'
+    this.alarmRadio = 'bells'
   }
 })
 

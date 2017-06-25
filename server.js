@@ -17,6 +17,22 @@ app.get('/front-desk-bells.mp3', function(req, res) {
   res.sendFile(__dirname + '/front-desk-bells-daniel_simon.mp3')
 })
 
+app.get('/slow-ticking.mp3', function(req, res) {
+  res.sendFile(__dirname + '/slow-ticking.mp3')
+})
+
+app.get('/fast-ticking.mp3', function(req, res) {
+  res.sendFile(__dirname + '/fast-ticking.mp3')
+})
+
+app.get('/heartbeat.mp3', function(req, res) {
+  res.sendFile(__dirname + '/heartbeat.mp3')
+})
+
+app.get('/rainforest.mp3', function(req, res) {
+  res.sendFile(__dirname + '/rainforest.mp3')
+})
+
 app.get('/plus.svg', function(req,res) {
   res.sendFile(__dirname + '/plus.svg')
 })
