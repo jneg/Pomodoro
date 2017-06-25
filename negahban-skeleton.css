@@ -2,30 +2,44 @@ body {
   font-weight: 300;
 }
 
-h1 {
+.centered {
+  text-align: center;
+}
+
+.nav-link {
+  font-size: 1.2rem;
+  font-weight: 600;
+  letter-spacing: .25rem;
+  text-transform: uppercase;
+  text-decoration: none;
+  margin: 0 3rem;
+  line-height: 10rem;
+  color: #444444;
+}
+
+.header {
   font-size: 5rem;
   font-weight: 200;
   letter-spacing: .1rem;
   text-transform: uppercase;
-  margin-top: 2rem;
-  margin-bottom: 4rem;
+  margin: 0 0 4rem 0;
 }
 
-h4 {
+.subheader {
+  display: block;
   font-size: 1.5rem;
   font-weight: 300;
   letter-spacing: .2rem;
   text-transform: uppercase;
-  margin-top: 0;
-  margin-bottom: 1rem;
+  margin: 1rem 0 0.5rem 0;
 }
 
-label {
-  display: block;
-  font-size: 1.4rem;
-  font-weight: 400;
-  letter-spacing: .1rem;
+.mammoth {
+  font-size: 15rem;
+  font-weight: 100;
+  letter-spacing: .2rem;
   text-transform: uppercase;
+  margin: 0;
 }
 
 input[type=email]:focus, input[type=number]:focus, input[type=password]:focus,
@@ -50,7 +64,7 @@ input[type=tel], input[type=text], input[type=url], textarea {
 }
 
 input[type=text] {
-  width: 30rem;
+  width: 40rem;
 }
 
 input[type=number] {
@@ -67,37 +81,12 @@ button.button-primary:hover, button.button-primary:focus {
   border-color: #33d3f0;
 }
 
-.centered {
-  text-align: center;
-}
-
-.navbar {
-  text-align: center;
-}
-
-.nav-link {
-  font-size: 1.2rem;
-  font-weight: 600;
-  letter-spacing: .25rem;
-  text-transform: uppercase;
-  text-decoration: none;
-  margin-right: 5rem;
-  line-height: 8rem;
-  color: #333333;
-}
-
-.timer {
-  font-size: 15rem;
-  font-weight: 100;
-}
-
 .wide-button {
   font-size: 1.2rem;
   font-weight: 300;
   letter-spacing: .3rem;
-  width: 20rem;
-  padding: 0;
   border-radius: 5rem;
+  width: 20rem;
 }
 
 .tight-button {
@@ -105,17 +94,11 @@ button.button-primary:hover, button.button-primary:focus {
   font-weight: 300;
   letter-spacing: .3rem;
   border-radius: 5rem;
+  padding: 0;
 }
 
-.task-label {
-  font-size: 1.2rem;
-  font-weight: 400;
-  letter-spacing: .1rem;
-  text-transform: uppercase;
-}
-
-input[type="checkbox"] {
-    display:none;
+input[type=checkbox], input[type=radio] {
+  display: none;
 }
 
 .check {
@@ -134,6 +117,37 @@ input[type=checkbox]:checked + label {
   border: 1px solid #33C3F0;
 }
 
+.radio {
+  display: inline-block;
+  cursor: pointer;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 5rem;
+  border: 1px solid #DDDDDD;
+  margin: 0;
+}
+
+input[type=radio]:checked + label {
+  background-color: #33C3F0;
+  border: 1px solid #33C3F0;
+}
+
+.label {
+  display: inline;
+  font-size: 1.2rem;
+  font-weight: 400;
+  letter-spacing: .1rem;
+  text-transform: uppercase;
+}
+
+.radio-label {
+  display: inline;
+  font-size: 1.4rem;
+  font-weight: 300;
+  letter-spacing: .05rem;
+  margin: 0 1.5rem 0 0;
+}
+
 .progress-label {
   font-size: 1.8rem;
   font-weight: 300;
@@ -142,7 +156,7 @@ input[type=checkbox]:checked + label {
 }
 
 .progress-bar {
-  margin-bottom: 3rem;
+  margin-bottom: 5rem;
   border: 1px solid #DDDDDD;
   border-radius: 5rem;
 }
@@ -156,13 +170,21 @@ input[type=checkbox]:checked + label {
 .add-button {
   background: url('plus.svg') no-repeat;
   border: none;
-  width: 3rem;
-  height: 3rem;
-  margin: 0rem 2rem;
+  width: 2.5rem;
+  height: 2.5rem;
+  padding: 0;
+  margin: 0 1.5rem 0 0;
 }
 
 .remove-button {
   background: url('minus.svg') no-repeat;
   border: none;
-  margin: 0rem 2rem;
+  width: 2.5rem;
+  height: 2.5rem;
+  padding: 0;
+  margin: 0 1.5rem 0 0;
+}
+
+.bottom-pad {
+  padding: 0 0 3rem 0;
 }
