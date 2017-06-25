@@ -118,18 +118,24 @@ const Tasks = Vue.component('Tasks', {
   template: `
   <div class="centered">
     <h1>Tasks</h1>
-    <div>{{progress}}%</div>
+    <div class="progress-label">{{progress}}%</div>
+    <div class="progress-bar">
+      <div :style="{width:progress + '%'}"></div>
+    </div>
     <draggable v-model="tasks">
       <div v-for="(task, index) in tasks">
-        <input type="checkbox" v-model="task.completed"/>
+        <input type="checkbox" v-model="task.completed" :id="index"/>
+        <label :for="index" class="check"/>
         <input type="number" v-model.number="task.points" min="1" oninput="validity.valid||(value=1)"/>
         <input type="text" v-model="task.name"/>
-        <button @click="deleteTask(index)" class="button-primary tight-button">Remove</button>
+        <button @click="deleteTask(index)" class="remove-button"></button>
       </div>
     </draggable>
-    Points <input type="number" value="1" v-model.number="addPoints" min="1" oninput="validity.valid||(value=1)"/>
-    Name <input type="text" v-model="addName"/>
-    <button @click="addTask(addName, addPoints)" class="button-primary tight-button">Add</button>
+    <span class="task-label">Points</span>
+    <input type="number" value="1" v-model.number="addPoints" min="1" oninput="validity.valid||(value=1)"/>
+    <span class="task-label">Name</span>
+    <input type="text" v-model="addName"/>
+    <button @click="addTask(addName, addPoints)" class="add-button"></button>
   </div>`,
   data: function() {
     return {
@@ -235,13 +241,15 @@ const About = Vue.component('About', {
     <h4>Pomodoro Technique</h4>
     <p>The Pomodoro Technique is a time management method developed by Francesco Cirillo in the late 1980s. The technique uses a timer to break down work into intervals, traditionally 25 minutes in length, separated by short breaks. These intervals are named pomodoros, the plural in English of the Italian word pomodoro (tomato), after the tomato-shaped kitchen timer that Cirillo used as a university student.</p>
     <h4>Timer</h4>
-    <p>The timer adheres to the Pomdoro Technique. Whenever the timer hits 0 seconds, it plays a sound notification and moves onto its next phase automatically. The phases are as follows - after every pomodoro there is either a short break or, if you hit your fourth consecutive pomodoro, a long break. After every break, there is a pomodoro. You may start, stop, and reset the timer.</p>
+    <p>The timer adheres to the Pomdoro Technique. Whenever the timer hits 0 seconds, it plays a sound notification and moves onto its next phase automatically. The phases are as follows - after every pomodoro there is either a short break or, if you hit your fourth consecutive pomodoro, a long break. After every break, there is a pomodoro. The timer holds the number of pomodoros completed and the current state. You may start, stop, and reset the timer.</p>
     <h4>Tasks</h4>
-    <p>The tasks page allows you to create tasks with specified points. A point is a discretionary unit of measure that allows you to estimate the effort of a task relative to other tasks on your list. With this information you may mark tasks as completed and the progress bar will gauge your estimated completion for the session.</p>
+    <p>The tasks page allows you to create tasks with specified points. You may create, remove, edit, and move tasks by dragging them. A point is a discretionary unit of measure that allows you to estimate the effort of a task relative to other tasks on your list. With this information you may mark tasks as completed and the progress bar will gauge your estimated completion for the session.</p>
     <h4>Settings</h4>
     <p>The settings page allows you to customize the minutes of a pomodoro, short break, or long break.</p>
     <h4>Session</h4>
     <p>Unfortunately, the web app does not support persistent storage. If you refresh the web application, your saved tasks and settings will be lost.</p>
+    <h4>Author</h4>
+    <p>This web app was created by Javon Negahban.</p>
   </div>`
 })
 

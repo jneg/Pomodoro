@@ -23,7 +23,7 @@ h4 {
 label {
   display: block;
   font-size: 1.4rem;
-  font-weight: 300;
+  font-weight: 400;
   letter-spacing: .1rem;
   text-transform: uppercase;
 }
@@ -105,4 +105,64 @@ button.button-primary:hover, button.button-primary:focus {
   font-weight: 300;
   letter-spacing: .3rem;
   border-radius: 5rem;
+}
+
+.task-label {
+  font-size: 1.2rem;
+  font-weight: 400;
+  letter-spacing: .1rem;
+  text-transform: uppercase;
+}
+
+input[type="checkbox"] {
+    display:none;
+}
+
+.check {
+  display: inline-block;
+  cursor: pointer;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 5rem;
+  border: 1px solid #DDDDDD;
+  margin: 0;
+  margin-right: 1rem;
+}
+
+input[type=checkbox]:checked + label {
+  background-color: #33C3F0;
+  border: 1px solid #33C3F0;
+}
+
+.progress-label {
+  font-size: 1.8rem;
+  font-weight: 300;
+  letter-spacing: .1rem;
+  color: #444444;
+}
+
+.progress-bar {
+  margin-bottom: 3rem;
+  border: 1px solid #DDDDDD;
+  border-radius: 5rem;
+}
+
+.progress-bar > div {
+   height: 0.5rem;
+   background-color: #33C3F0;
+   border-radius: 5rem;
+}
+
+.add-button {
+  background: url('plus.svg') no-repeat;
+  border: none;
+  width: 3rem;
+  height: 3rem;
+  margin: 0rem 2rem;
+}
+
+.remove-button {
+  background: url('minus.svg') no-repeat;
+  border: none;
+  margin: 0rem 2rem;
 }
