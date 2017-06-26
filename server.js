@@ -13,6 +13,10 @@ app.get('/app.js', function(req, res) {
   res.sendFile(__dirname + '/app.js')
 })
 
+app.get('/favicon.ico', function(req, res) {
+  res.sendFile(__dirname + '/favicon.ico')
+})
+
 app.get('/front-desk-bells.mp3', function(req, res) {
   res.sendFile(__dirname + '/front-desk-bells-daniel_simon.mp3')
 })
