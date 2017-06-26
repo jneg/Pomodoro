@@ -10,7 +10,8 @@ const immutable = {
     slowTicking: new Audio('slow-ticking.mp3'),
     fastTicking: new Audio('fast-ticking.mp3'),
     heartbeat: new Audio('heartbeat.mp3'),
-    rainforest: new Audio('rainforest.mp3')
+    rain: new Audio('rain.mp3'),
+    ocean: new Audio('ocean.mp3')
   },
   alarm: {
     noAlarm: null,
@@ -130,7 +131,9 @@ const Timer = Vue.component('Timer', {
       let second = this.shared.timerSeconds % 60
       let m = minute > 9 ? minute : '0' + minute
       let s = second > 9 ? second : '0' + second
-      return m + ':' + s
+      let time = m + ':' + s
+      document.title = time + ' - ' + this.shared.phase + ' - Visceral Productivity'
+      return time
     }
   },
   watch: {
@@ -327,9 +330,12 @@ const Settings = Vue.component('Settings', {
       <input type="radio" id="heartbeat" name="ticking" value="heartbeat" v-model="ticking">
       <label for="heartbeat" class="radio"/>
       <div class="radio-label">Heartbeat</div>
-      <input type="radio" id="rainforest" name="ticking" value="rainforest" v-model="ticking">
-      <label for="rainforest" class="radio"/>
-      <div class="radio-label">Rainforest</div>
+      <input type="radio" id="rain" name="ticking" value="rain" v-model="ticking">
+      <label for="rain" class="radio"/>
+      <div class="radio-label">Rain</div>
+      <input type="radio" id="ocean" name="ticking" value="ocean" v-model="ticking">
+      <label for="ocean" class="radio"/>
+      <div class="radio-label">Ocean</div>
     </div>
     <div class="bottom-pad">
       <div class="subheader">Alarm</div>
@@ -381,19 +387,19 @@ const About = Vue.component('About', {
   <div class="centered">
     <div class="header">About</div>
     <div class="subheader">Overview</div>
-    <p>This is a productivity web app which hosts a pomodoro timer, a tasks page with a progress bar, and a settings page.</p>
+    <p>Visceral Productivity is a productivity web app which hosts a pomodoro timer, a tasks page with a progress bar, and a settings page.</p>
     <div class="subheader">Pomodoro Technique</div>
     <p>The Pomodoro Technique is a time management method developed by Francesco Cirillo in the late 1980s. The technique uses a timer to break down work into intervals, traditionally 25 minutes in length, separated by short breaks. These intervals are named pomodoros, the plural in English of the Italian word pomodoro (tomato), after the tomato-shaped kitchen timer that Cirillo used as a university student.</p>
     <div class="subheader">Timer</div>
-    <p>The timer adheres to the Pomdoro Technique. Whenever the timer hits 0 seconds, it plays a sound notification and moves onto its next phase automatically. The phases are as follows - after every pomodoro there is either a short break or, if you hit your fourth consecutive pomodoro, a long break. After every break, there is a pomodoro. The timer holds the number of pomodoros completed and the current state. You may start, stop, and reset the timer.</p>
+    <p>The timer adheres to the Pomdoro Technique. Whenever the timer hits 0 seconds, it plays an optional sound notification and moves onto its next phase automatically. The phases are as follows - after every pomodoro there is either a short break or, if you hit your fourth consecutive pomodoro, a long break. After every break, there is a pomodoro. The timer holds the number of pomodoros completed and the current state. You may start, stop, and reset the timer.</p>
     <div class="subheader">Tasks</div>
     <p>The tasks page allows you to create tasks with specified points. You may create, remove, edit, and move tasks by dragging them. A point is a discretionary unit of measure that allows you to estimate the effort of a task relative to other tasks on your list. With this information you may mark tasks as completed and the progress bar will gauge your estimated completion for the session.</p>
     <div class="subheader">Settings</div>
-    <p>The settings page allows you to customize the minutes of a pomodoro, short break, or long break.</p>
+    <p>The settings page allows you to customize the minutes of a pomodoro, short break, long break, or the sound of the ticking and alarm.</p>
     <div class="subheader">Session</div>
-    <p>Unfortunately, the web app does not support persistent storage. If you refresh the web application, your saved tasks and settings will be lost.</p>
+    <p>One use of Visceral Productivity is considered a session. Reloading the web application is starting a new session. Unfortunately, the web app does not support persistent storage. If you refresh the web application, your saved timer, tasks, and settings will be lost.</p>
     <div class="subheader">Author</div>
-    <p>This web app was created by Javon Negahban.</p>
+    <p>Visceral Productivity was created and hosted by Javon Negahban and is part of the Visceral Innovations network.</p>
   </div>`
 })
 

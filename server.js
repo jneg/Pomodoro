@@ -29,8 +29,12 @@ app.get('/heartbeat.mp3', function(req, res) {
   res.sendFile(__dirname + '/heartbeat.mp3')
 })
 
-app.get('/rainforest.mp3', function(req, res) {
-  res.sendFile(__dirname + '/rainforest.mp3')
+app.get('/rain.mp3', function(req, res) {
+  res.sendFile(__dirname + '/rain.mp3')
+})
+
+app.get('/ocean.mp3', function(req, res) {
+  res.sendFile(__dirname + '/ocean.mp3')
 })
 
 app.get('/plus.svg', function(req,res) {
