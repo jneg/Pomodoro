@@ -1,6 +1,6 @@
 const express = require('express')
 const app = express()
-const port = 3000
+const port = process.env.PORT || 3000
 
 app.get('/', function (req, res) {
   res.sendFile(__dirname + '/index.html')
@@ -51,5 +51,5 @@ app.get('/minus.svg', function(req,res) {
 })
 
 app.listen(port, function () {
-  console.log('Pomodoro app listening on port ' + port)
+  console.log('Visceral Productivity listening on port ' + port)
 })
