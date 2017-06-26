@@ -10,8 +10,8 @@ app.get('/negahban-skeleton.css', function (req, res) {
   res.sendFile(__dirname + '/negahban-skeleton.css')
 })
 
-app.get('/app.js', function(req, res) {
-  res.sendFile(__dirname + '/app.js')
+app.get('/client.js', function(req, res) {
+  res.sendFile(__dirname + '/client.js')
 })
 
 app.get('/favicon.ico', function(req, res) {
