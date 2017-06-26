@@ -6,8 +6,8 @@ app.get('/', function (req, res) {
   res.sendFile(__dirname + '/index.html')
 })
 
-app.get('/negahban-skeleton.css', function (req, res) {
-  res.sendFile(__dirname + '/negahban-skeleton.css')
+app.get('/regeneratron-skeleton.css', function (req, res) {
+  res.sendFile(__dirname + '/regeneratron-skeleton.css')
 })
 
 app.get('/client.js', function(req, res) {

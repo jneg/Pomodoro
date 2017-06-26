@@ -132,7 +132,7 @@ const Timer = Vue.component('Timer', {
       let m = minute > 9 ? minute : '0' + minute
       let s = second > 9 ? second : '0' + second
       let time = m + ':' + s
-      document.title = time + ' - ' + this.shared.phase + ' - Visceral Productivity'
+      document.title = time + ' - ' + this.shared.phase + ' - Regeneratron'
       return time
     }
   },
@@ -387,7 +387,7 @@ const About = Vue.component('About', {
   <div class="centered">
     <div class="header">About</div>
     <div class="subheader">Overview</div>
-    <p>Visceral Productivity is a productivity web app which hosts a pomodoro timer, a tasks page with a progress bar, and a settings page.</p>
+    <p>Regeneratron is a productivity web app which hosts a pomodoro timer, a tasks page with a progress bar, and a settings page.</p>
     <div class="subheader">Pomodoro Technique</div>
     <p>The Pomodoro Technique is a time management method developed by Francesco Cirillo in the late 1980s. The technique uses a timer to break down work into intervals, traditionally 25 minutes in length, separated by short breaks. These intervals are named pomodoros, the plural in English of the Italian word pomodoro (tomato), after the tomato-shaped kitchen timer that Cirillo used as a university student.</p>
     <div class="subheader">Timer</div>
@@ -397,9 +397,9 @@ const About = Vue.component('About', {
     <div class="subheader">Settings</div>
     <p>The settings page allows you to customize the minutes of a pomodoro, short break, long break, or the sound of the ticking and alarm.</p>
     <div class="subheader">Session</div>
-    <p>One use of Visceral Productivity is considered a session. Reloading the web application is starting a new session. Unfortunately, the web app does not support persistent storage. If you refresh the web application, your saved timer, tasks, and settings will be lost.</p>
+    <p>One use of Regeneratron is considered a session. Reloading the web application is starting a new session. Unfortunately, the web app does not support persistent storage. If you refresh the web application, your saved timer, tasks, and settings will be lost.</p>
     <div class="subheader">Author</div>
-    <p>Visceral Productivity was created and hosted by Javon Negahban and is part of the Visceral Innovations network.</p>
+    <p>Regeneratron was created and hosted by Javon Negahban and is part of the Visceral Innovations network.</p>
   </div>`
 })
 
