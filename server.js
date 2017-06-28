@@ -14,6 +14,10 @@ app.get('/client.js', function(req, res) {
   res.sendFile(__dirname + '/client.js')
 })
 
+app.get('/analytics.js', function(req, res) {
+  res.sendFile(__dirname + '/analytics.js')
+})
+
 app.get('/favicon.ico', function(req, res) {
   res.sendFile(__dirname + '/favicon.ico')
 })
